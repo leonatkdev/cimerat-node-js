@@ -7,13 +7,15 @@ const Property = require("../models/PropertyModel");
 const Booking = require("../models/BookingModel");
 const Review = require("../models/ReviewModel");
 
-const { createUser } = require('../controllers/userController');
+const { createUser, loginUser  } = require('../controllers/userController');
 
 router.get("/", (req, res) => {
   res.json("This is api");
 });
 
 router.post('/signup', createUser);
+
+router.post('/login', loginUser);
 
 router.post("/api/getUser/:userId", async (req, res) => {
   const userId = req.params.userId;
