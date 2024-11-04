@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const path = require('path'); 
 const app = express();
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -19,6 +20,9 @@ connectDB();
 app.get("/", (req, res) => {
   res.json("Server is running 🙃");
 });
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api", api); // Prefix API routes with /api
 

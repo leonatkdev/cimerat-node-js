@@ -8,15 +8,23 @@ const authMiddleware = async (req, res, next) => {
     // Get the token from the Authorization header
     const token = req.header('Authorization').replace('Bearer ', '');
 
+    console.log('token', token)
+
     if (!token) {
       return res.status(401).json({ message: 'Authentication token missing' });
     }
 
+    console.log('here')
+
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET); 
 
+    console.log('decoded', decoded)
+
     // Find the user associated with the token
     const user = await User.findById(decoded.userId);
+
+    console.log('user', user)
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid authentication token' });
