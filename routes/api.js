@@ -50,56 +50,35 @@ router.get("/all/posts", async (req, res) => {
 // Add the create post endpoint
 router.post("/posts", authMiddleware, upload.array('images', 10), async (req, res) => {
   try {
-    const { title, location, 
-      // coordinates,
-       description, price } = req.body;
+    const { title, location, description, price } = req.body;
 
-    // Validate the input
-    if (!title || !location  || !description || !price) {
+    if (!title || !location || !description || !price) {
       return res.status(400).json({ message: "Please provide all required fields" });
     }
 
-    let images = [];
+    // Dynamically generate the URLs based on backend's origin
+    const imagesArr = req.files.map(file => ({
+      url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`,
+      filename: file.filename,
+    }));
 
-    // Check if files were uploaded
-    if (req.files && req.files.length > 0) {
-      images = req.files.map(file => ({
-        path: file.path, // e.g., 'uploads/image-uniqueId.jpg'
-        filename: file.filename, // e.g., 'image-uniqueId.jpg'
-      }));
-    }
-
-    // // Parse coordinates if sent as a JSON string
-    // let parsedCoordinates;
-    // if (typeof coordinates === 'string') {
-    //   parsedCoordinates = JSON.parse(coordinates);
-    // } else {
-    //   parsedCoordinates = coordinates;
-    // }
-
-    // Create a new property
     const newProperty = new Property({
       title,
       location,
-      // coordinates: parsedCoordinates,
       description,
       price,
-      owner: req.user._id, // Associate the property with the authenticated user
-      images, // Add images array
+      owner: req.user._id,
+      images: imagesArr,
     });
 
-    // Save the property to the database
     const savedProperty = await newProperty.save();
-
-    // Optionally, add the property to the user's properties array
     req.user.properties.push(savedProperty._id);
     await req.user.save();
 
     res.status(201).json(savedProperty);
   } catch (error) {
     console.error("Error creating post:", error);
-    
-    // Handle Multer-specific errors
+
     if (error instanceof multer.MulterError) {
       return res.status(400).json({ message: error.message });
     }
@@ -107,5 +86,6 @@ router.post("/posts", authMiddleware, upload.array('images', 10), async (req, re
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
 
 module.exports = router;
