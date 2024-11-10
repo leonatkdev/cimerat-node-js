@@ -6,6 +6,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "deleteimg": "rm -r /uploads/*",
+    "seedUsers": "node database/seeders/seedUsers.js",
+    "seedProperties": "node database/seeders/seedProperties.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "leo",

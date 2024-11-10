@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
   phone: { type: String },
   createdAt: { type: Date, default: Date.now },
   properties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }], // References properties created by the user
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }] // Reference to Property model or other favorite items
 }, { timestamps: true });
 
 // Hash password before saving
