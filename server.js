@@ -7,6 +7,8 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const api = require("./routes/api");
 
+const s3 = require('./s3')
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -26,6 +28,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api", api); // Prefix API routes with /api
 
+app.get("/s3Url", async(req, res) => {
+   const url = s3.generateUploadURL()
+   res.send({url})
+})
+
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -37,6 +45,8 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
+
+
 
 // Uncaught Exception & Unhandled Rejection handlers
 process.on("uncaughtException", (error) => {
