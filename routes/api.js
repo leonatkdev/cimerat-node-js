@@ -66,10 +66,10 @@ router.get("/posts/:id", async (req, res) => {
 router.post(
   "/posts",
   authMiddleware,
-  upload.array("images", 10),
+  // upload.array("images", 10),
   async (req, res) => {
     try {
-      const { title, location, description, price } = req.body;
+      const { title, location, description, price, images } = req.body;
 
       if (!title || !location || !description || !price) {
         return res
@@ -78,10 +78,10 @@ router.post(
       }
 
       // Dynamically generate the URLs based on backend's origin
-      const imagesArr = req.files.map((file) => ({
-        url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
-        filename: file.filename,
-      }));
+      // const imagesArr = req.files.map((file) => ({
+      //   url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
+      //   filename: file.filename,
+      // }));
 
       const newProperty = new Property({
         title,
@@ -89,7 +89,8 @@ router.post(
         description,
         price,
         owner: req.user._id,
-        images: imagesArr,
+        // images: imagesArr,
+        images: images
       });
 
       const savedProperty = await newProperty.save();
@@ -114,19 +115,17 @@ router.post("/favorites", authMiddleware, async (req, res) => {
   try {
     const { itemId } = req.body;
 
-    // Ensure no duplicate favorites
     if (!req.user.favorites.includes(itemId)) {
       req.user.favorites.push(itemId);
       await req.user.save();
     }
 
-    res
-      .status(201)
-      .json({ message: "Favorite added!", favorites: req.user.favorites });
+    res.status(201).json({ message: "Favorite added!", favorites: req.user.favorites });
   } catch (error) {
     res.status(500).json({ message: "Error adding favorite", error });
   }
 });
+
 
 // GET - Retrieve all favorites with full data for the logged-in user
 router.get("/favorites", authMiddleware, async (req, res) => {
@@ -140,6 +139,22 @@ router.get("/favorites", authMiddleware, async (req, res) => {
     res.status(200).json(userWithFavorites.favorites);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving favorites", error });
+  }
+});
+
+router.delete("/favorites/:id", authMiddleware, async (req, res) => {
+  try {
+    const itemId = req.params.id;
+
+    const index = req.user.favorites.indexOf(itemId);
+    if (index > -1) {
+      req.user.favorites.splice(index, 1); // Remove item from favorites
+      await req.user.save();
+    }
+
+    res.status(200).json({ message: "Favorite removed!", favorites: req.user.favorites });
+  } catch (error) {
+    res.status(500).json({ message: "Error removing favorite", error });
   }
 });
 

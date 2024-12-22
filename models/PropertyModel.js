@@ -40,19 +40,20 @@ const PropertySchema = new mongoose.Schema({
     ref: "User",
     // required: true
   },
-  images: [
-    {
-      url: {
-        type: String,
-        required: true,
-        match: /^https?:\/\/.+\.(jpg|jpeg|png|gif)$/,
-      },
-      filename: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  images: [{ type: String }],
+  //  [
+  //   {
+  //     url: {
+  //       type: String,
+  //       required: true,
+  //       match: /^https?:\/\/.+\.(jpg|jpeg|png|gif)$/,
+  //     },
+  //     filename: {
+  //       type: String,
+  //       required: true,
+  //     },
+  //   },
+  // ],
   createdAt: { type: Date, default: Date.now },
 });
 

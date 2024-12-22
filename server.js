@@ -7,7 +7,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const api = require("./routes/api");
 
-const s3 = require('./s3')
+const {generateUploadURL} = require('./s3')
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,11 +28,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api", api); // Prefix API routes with /api
 
-app.get("/s3Url", async(req, res) => {
-   const url = s3.generateUploadURL()
-   res.send({url})
-})
 
+app.get('/s3Url', async (req, res) => {
+  const url = await generateUploadURL()
+  res.send({url})
+})
 
 // Global error handler
 app.use((err, req, res, next) => {

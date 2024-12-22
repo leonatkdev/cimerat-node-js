@@ -28,33 +28,37 @@ exports.createUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   try {
-
+    // Find user by email
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Check if password matches
+    // Verify password
     const isMatch = await user.matchPassword(password);
-
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT token
+    // Generate new JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d", // 1 day expiration
+      expiresIn: "7d", // Token valid for 7 day
     });
 
-    res
-      .status(200)
-      .json({
-        token,
-        user: { id: user._id, email: user.email, name: user.name },
-      });
+    // Send response
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
