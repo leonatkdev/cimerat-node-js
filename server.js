@@ -24,23 +24,24 @@ app.get("/", (req, res) => {
 });
 
 // Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api", api); // Prefix API routes with /api
 
 
-app.get('/s3Url', async (req, res) => {
-  const url = await generateUploadURL()
-  res.send({url})
-})
+// app.get('/s3Url', async (req, res) => {
+//   const url = await generateUploadURL()
+//   res.send({url})
+// })
 
-// Global error handler
+// // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res
     .status(500)
     .json({ message: "Something went wrong!", error: err.message });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
